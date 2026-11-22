@@ -421,6 +421,8 @@ enum Prefs {
     /// then, so a new Mac can't delete clips it hasn't seen yet.
     static let iCloudImportedOnce = "iCloudImportedOnce"
     static let iCloudLastSynced = "iCloudLastSynced"
+    /// Set once this Mac has decided whether to add the welcome pinboard (see WelcomeClips).
+    static let welcomeClipsChecked = "welcomeClipsChecked"
     /// Bundle IDs of apps whose copies are never saved.
     static let ignoredApps = "ignoredApps"
     /// Copies that contain an access token, API key or private key aren't saved. Off by default.

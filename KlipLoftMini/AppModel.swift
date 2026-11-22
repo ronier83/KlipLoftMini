@@ -127,18 +127,23 @@ final class AppModel {
         panel = SpotlightPanelController(model: self)
         HotKey.shared.onPress = { [weak self] in self?.panel.toggle() }
         HotKey.shared.registerSaved()
+        let launch = Date.now
         sync.onImport = { [weak self] in
             self?.mergeDuplicates()
             self?.pruneHistory()
             self?.useStoredAppIcons()
             self?.rebuildTagIndex()
             self?.historyChanged()
+            self?.addWelcomeClipsIfFreshInstall(since: launch)
         }
         sync.onCapacityChange = { [weak self] in self?.pruneHistory() }
+        sync.onAccountUnavailable = { [weak self] in self?.addWelcomeClipsIfFreshInstall(since: launch) }
         sync.start(storeWasEmpty: ((try? context.fetchCount(FetchDescriptor<ClipItem>())) ?? 0) == 0)
         mergeDuplicates()
         removeOrphanedLocalImages()
         useStoredAppIcons()
+        // With iCloud on, the welcome clips wait for the first download (onImport above).
+        if CloudSync.canPrune { addWelcomeClipsIfFreshInstall(since: launch) }
         pruneHistory()
         // Off the launch path, so the first search doesn't pay for them: the keyword index, and one
         // throwaway text search that brings the clip store into the disk cache.
