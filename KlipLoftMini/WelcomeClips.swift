@@ -1,15 +1,21 @@
 import Foundation
 import SwiftData
 
-/// Links shown on a fresh install: a KlipLoft pinboard with the website, the source code, the
-/// LinkedIn post and Buy Me a Coffee. They're ordinary clips, so they can be deleted like any other.
+/// Links shown on a fresh install: a KlipLoft pinboard with the website, the source code and the
+/// LinkedIn post, plus a support card in builds made with WELCOME_SUPPORT_CARD.
+/// They're ordinary clips, so they can be deleted like any other.
 extension AppModel {
-    private static let welcomePins: [(title: String, url: String, keywords: [String])] = [
-        ("KlipLoft Website", "https://www.kliploft.app/", ["kliploft", "mini", "website", "download", "home"]),
-        ("KlipLoft Mini on GitHub", "https://github.com/ronier83/KlipLoftMini", ["kliploft", "mini", "github", "source", "code", "open source"]),
-        ("Say Thanks on LinkedIn", "https://www.linkedin.com/feed/update/urn:li:activity:7522724326031433728/", ["kliploft", "mini", "linkedin", "thanks", "share", "feedback"]),
-        ("Buy Me a Coffee", "https://buymeacoffee.com/klipapp", ["kliploft", "mini", "coffee", "support", "donate", "tip"]),
-    ]
+    private static let welcomePins: [(title: String, url: String, keywords: [String])] = {
+        var pins: [(title: String, url: String, keywords: [String])] = [
+            ("KlipLoft Website", "https://www.kliploft.app/", ["kliploft", "mini", "website", "download", "home"]),
+            ("KlipLoft Mini on GitHub", "https://github.com/ronier83/KlipLoftMini", ["kliploft", "mini", "github", "source", "code", "open source"]),
+            ("Say Thanks on LinkedIn", "https://www.linkedin.com/feed/update/urn:li:activity:7522724326031433728/", ["kliploft", "mini", "linkedin", "thanks", "share", "feedback"]),
+        ]
+        #if WELCOME_SUPPORT_CARD
+        pins.append(("Buy Me a Coffee", "https://buymeacoffee.com/klipapp", ["kliploft", "mini", "coffee", "support", "donate", "tip"]))
+        #endif
+        return pins
+    }()
 
     /// Adds the welcome clips once per Mac, and only to an empty history. With iCloud sync on,
     /// this waits for the first download, so a Mac joining an existing history (KlipLoft's

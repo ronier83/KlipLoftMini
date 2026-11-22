@@ -27,8 +27,10 @@ notarize() {
 }
 
 echo "Archiving…"
+# The release DMG includes the support card in the welcome pinboard (see WelcomeClips.swift).
 xcodebuild -project KlipLoftMini.xcodeproj -scheme KlipLoftMini -configuration Release \
-    -derivedDataPath build/DD-release -archivePath "$out/Mini.xcarchive" archive -quiet
+    -derivedDataPath build/DD-release -archivePath "$out/Mini.xcarchive" archive -quiet \
+    SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) WELCOME_SUPPORT_CARD'
 
 cat > "$out/ExportOptions.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
