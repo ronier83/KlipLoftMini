@@ -163,5 +163,8 @@ report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-KlipLoft Mini is free software under the [GNU General Public License v3.0](LICENSE).
+KlipLoft Mini's source code is free software under the [GNU General Public License v3.0](LICENSE).
 © 2026 Ron Erez.
+
+The KlipLoft and KlipLoft Mini names and icons are trademarks and aren't covered by the GPL-3.0. If you
+publish a fork, give it its own name and icons. See [TRADEMARKS.md](TRADEMARKS.md).

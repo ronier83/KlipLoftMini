@@ -11,4 +11,4 @@
 - [ ] It builds without new warnings
 - [ ] No real clipboard contents in screenshots or code
 - [ ] No new network connections, analytics or tracking
-- [ ] I agree my contribution is under the GPL-3.0 and may ship in the App Store build ([CONTRIBUTING.md](../CONTRIBUTING.md))
+- [ ] I agree to the contribution terms in [CONTRIBUTING.md](../CONTRIBUTING.md#licensing-of-contributions), including their use in the App Store build and KlipLoft
