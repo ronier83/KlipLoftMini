@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="220" viewBox="0 0 640 220" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <!-- KlipLoft Mini's menu bar icon, drawn large: the same paths as Assets.xcassets/MenuBarIcon -->
+  <g transform="translate(254 12) scale(6)" stroke="#f5f5f7" stroke-width="1.5" fill="none">
+    <rect x="1.75" y="1.75" width="18.5" height="14.5" rx="6.5"/>
+    <circle cx="7.5" cy="8.5" r="2.75"/>
+    <path d="M9.5 10.5L11.25 12.25" stroke-linecap="round"/>
+    <rect x="12.25" y="7.75" width="4.75" height="2.5" rx="1.25" fill="#f5f5f7" fill-opacity="0.4" stroke="none"/>
+  </g>
+
+  <!-- A Mac menu bar with the icon where it lives after installing -->
+  <g transform="translate(0 148)">
+    <rect x="0.5" y="0.5" width="639" height="55" rx="14" fill="#2a2a2d" stroke="#3a3a3c"/>
+    <text x="24" y="35" font-size="20" fill="#f5f5f7"><tspan font-weight="700">Finder</tspan><tspan dx="22">File</tspan><tspan dx="20">Edit</tspan><tspan dx="20">View</tspan></text>
+
+    <!-- KlipLoft Mini, highlighted like a clicked menu bar item -->
+    <rect x="298" y="8" width="56" height="40" rx="10" fill="#f5f5f7" fill-opacity="0.16"/>
+    <g transform="translate(306 12.25) scale(1.75)" stroke="#f5f5f7" stroke-width="1.5" fill="none">
+      <rect x="1.75" y="1.75" width="18.5" height="14.5" rx="6.5"/>
+      <circle cx="7.5" cy="8.5" r="2.75"/>
+      <path d="M9.5 10.5L11.25 12.25" stroke-linecap="round"/>
+      <rect x="12.25" y="7.75" width="4.75" height="2.5" rx="1.25" fill="#f5f5f7" fill-opacity="0.4" stroke="none"/>
+    </g>
+
+    <!-- Wi-Fi -->
+    <g stroke="#f5f5f7" stroke-width="3" stroke-linecap="round" fill="none">
+      <path d="M375.05 35.05A7 7 0 0 1 384.95 35.05"/>
+      <path d="M370.8 30.8A13 13 0 0 1 389.2 30.8"/>
+      <path d="M366.6 26.6A19 19 0 0 1 393.4 26.6"/>
+    </g>
+    <circle cx="380" cy="40" r="2.5" fill="#f5f5f7"/>
+
+    <!-- Battery -->
+    <rect x="410" y="20" width="34" height="17" rx="4.5" fill="none" stroke="#f5f5f7" stroke-opacity="0.5" stroke-width="1.6"/>
+    <rect x="413" y="23" width="22" height="11" rx="2.5" fill="#f5f5f7"/>
+    <rect x="445.5" y="25.5" width="2.5" height="6" rx="1" fill="#f5f5f7" fill-opacity="0.5"/>
+
+    <text x="616" y="35" font-size="20" fill="#f5f5f7" text-anchor="end">Sun 22 Nov  12:32</text>
+  </g>
+</svg>

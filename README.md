@@ -29,6 +29,20 @@ Free, private and open source, from the maker of [KlipLoft](https://www.kliploft
 KlipLoft Mini will be free on the Mac App Store. Until then you can [build it from source](#build-from-source)
 in a couple of minutes.
 
+## Find it in your menu bar
+
+Mini has no Dock icon. After you install it, look for the search bar icon in your menu bar. Press
+<kbd>⌥</kbd> <kbd>Space</kbd> anywhere and your clips are right there, or click the icon to open Mini or its settings.
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/menubar-dark.svg">
+  <img src="docs/assets/menubar-light.svg" width="560" alt="KlipLoft Mini's menu bar icon, a small search bar with a magnifier, shown large and in the Mac menu bar">
+</picture>
+
+</div>
+
 ## Features
 
 ### One search away
