@@ -1,0 +1,23 @@
+name: Feature request
+description: An idea to make KlipLoft Mini better.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Mini stays small on purpose: one search bar for your clipboard history. Bigger features may already be in [KlipLoft](https://www.kliploft.app).
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: The problem you're trying to solve, in your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could Mini help?
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else

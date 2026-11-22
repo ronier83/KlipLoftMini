@@ -1,0 +1,11 @@
+// Signing for KlipLoft Mini. Anyone can build with these defaults: copy Local.example.xcconfig to
+// Local.xcconfig (git-ignored) and set your own team and bundle ID.
+
+DEVELOPMENT_TEAM =
+PRODUCT_BUNDLE_IDENTIFIER = com.example.KlipLoftMini
+
+// No iCloud: syncing needs KlipLoft's iCloud container, which only the official builds can use.
+// The app notices and keeps its history on the Mac (see CloudSync.isAvailable).
+CODE_SIGN_ENTITLEMENTS = KlipLoftMini.entitlements
+
+#include? "Local.xcconfig"

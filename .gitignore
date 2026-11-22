@@ -1,0 +1,7 @@
+build/
+DerivedData/
+xcuserdata/
+.DS_Store
+
+# Your own signing settings (see Config/Local.example.xcconfig)
+Config/Local.xcconfig

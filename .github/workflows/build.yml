@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Show Xcode
+        run: xcodebuild -version
+
+      # Unsigned, so it needs no team or secrets; forks and pull requests build the same way
+      - name: Build
+        run: |
+          xcodebuild -project KlipLoftMini.xcodeproj -scheme KlipLoftMini -configuration Release \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build

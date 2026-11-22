@@ -1,0 +1,51 @@
+name: Bug report
+description: Something in KlipLoft Mini doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please don't paste real clipboard contents; they can hold passwords or personal details.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Press ⌥Space
+        2. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: KlipLoft Mini version
+      description: Settings › About shows it, for example 1.0 (18).
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: macOS 26.1
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where did you get it?
+      options:
+        - Mac App Store
+        - Built from source
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
