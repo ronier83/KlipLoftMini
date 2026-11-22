@@ -687,10 +687,7 @@ struct AboutPreferencesView: View {
                 LabeledContent("Website") {
                     Link("kliploft.app", destination: Self.website)
                 }
-                LabeledContent("Updates") {
-                    Text("Through the Mac App Store")
-                        .foregroundStyle(.secondary)
-                }
+                updates
                 LabeledContent("Source Code") {
                     Link("GitHub", destination: Self.sourceCode)
                 }
@@ -699,7 +696,23 @@ struct AboutPreferencesView: View {
         .formStyle(.grouped)
     }
 
+    /// The App Store updates its copies; a DMG or a build from source is updated by downloading the newest release.
+    private var updates: some View {
+        LabeledContent("Updates") {
+            if Self.isFromAppStore {
+                Text("Through the Mac App Store")
+                    .foregroundStyle(.secondary)
+            } else {
+                Link("Releases on GitHub", destination: Self.releases)
+            }
+        }
+    }
+
+    /// The App Store (and TestFlight) put a receipt inside the app; builds from source have none.
+    private static let isFromAppStore = FileManager.default.fileExists(
+        atPath: Bundle.main.bundleURL.appending(path: "Contents/_MASReceipt/receipt").path)
     private static let sourceCode = URL(string: "https://github.com/ronier83/KlipLoftMini")!
+    private static let releases = URL(string: "https://github.com/ronier83/KlipLoftMini/releases")!
 }
 
 /// Mini's way into the full KlipLoft, its free bigger sibling: what it adds, and that the

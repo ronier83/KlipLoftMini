@@ -9,6 +9,7 @@
 Press <kbd>⌥</kbd> <kbd>Space</kbd>, pick a clip, and it's pasted.<br>
 Free, private and open source, from the maker of [KlipLoft](https://www.kliploft.app).
 
+[![Download](https://img.shields.io/github/v/release/ronier83/KlipLoftMini?label=Download&color=FF6B35)](https://github.com/ronier83/KlipLoftMini/releases/latest)
 [![Mac App Store: coming soon](https://img.shields.io/badge/Mac_App_Store-coming_soon-0D96F6?logo=apple&logoColor=white)](https://www.kliploft.app)
 [![macOS 26+](https://img.shields.io/badge/macOS-26%2B-black?logo=apple)](#build-from-source)
 [![Swift](https://img.shields.io/badge/Swift-SwiftUI-F05138?logo=swift&logoColor=white)](https://developer.apple.com/xcode/swiftui/)
@@ -24,10 +25,23 @@ Free, private and open source, from the maker of [KlipLoft](https://www.kliploft
 
 </div>
 
-## Coming soon to the Mac App Store
+## Download
 
-KlipLoft Mini will be free on the Mac App Store. Until then you can [build it from source](#build-from-source)
-in a couple of minutes.
+KlipLoft Mini is free. Pick whichever way you like:
+
+- **DMG:** download `KlipLoft-Mini-<version>.dmg` from the [latest release](https://github.com/ronier83/KlipLoftMini/releases/latest),
+  open it and drag KlipLoft Mini to Applications. It's signed and notarized by Apple.
+- **Homebrew:**
+
+  ```sh
+  brew install --cask ronier83/tap/kliploft-mini
+  ```
+
+- **Mac App Store:** coming soon.
+- **Source:** [build it yourself](#build-from-source) in a couple of minutes.
+
+The App Store updates its copy for you. For the DMG, download the newest release when one comes out
+(Settings › About links to it), or run `brew upgrade` if you installed with Homebrew.
 
 ## Find it in your menu bar
 
@@ -92,8 +106,8 @@ Mini has no Dock icon. After you install it, look for the search bar icon in you
 ## Mini or KlipLoft?
 
 KlipLoft Mini is the quickest way in. When you want more, [KlipLoft](https://www.kliploft.app) is its bigger
-sibling, and it's free too. With the App Store version of Mini, your history and pinboards sync to KlipLoft
-through your own iCloud, so they're already there when you switch.
+sibling, and it's free too. With the DMG or App Store version of Mini, your history and pinboards sync to
+KlipLoft through your own iCloud, so they're already there when you switch.
 
 | | KlipLoft Mini | KlipLoft |
 |---|:---:|:---:|
@@ -102,7 +116,7 @@ through your own iCloud, so they're already there when you switch.
 | Preview and edit before pasting | ✓ | ✓ |
 | Pinboards | ✓ | ✓ |
 | Skips passwords, wipes deleted clips | ✓ | ✓ |
-| iCloud sync between your Macs | App Store version | ✓ |
+| iCloud sync between your Macs | DMG and App Store versions | ✓ |
 | Your clips as a drawer of cards, in card styles | | ✓ |
 | iPhone and iPad app, with a keyboard that pastes your clips | | ✓ |
 | One-click import from Paste or Maccy | | ✓ |
@@ -119,8 +133,8 @@ Settings › About in Mini has the same link.
 
 ## Privacy
 
-Your clips never leave your Mac, except to your own private iCloud database when sync is on in the App Store
-version (the developer can't read it). There are no analytics, crash reports, ads or accounts.
+Your clips never leave your Mac, except to your own private iCloud database when sync is on in the DMG or App
+Store version (the developer can't read it). There are no analytics, crash reports, ads or accounts.
 
 The one other connection is link previews: when you copy a link, Mini fetches that page's title and picture
 directly from the site. You can turn this off in Settings › Clips.
@@ -154,7 +168,7 @@ xcodebuild -project KlipLoftMini.xcodeproj -scheme KlipLoftMini -configuration R
 ```
 
 Builds from source keep their history on your Mac. iCloud sync needs KlipLoft's iCloud container, which only
-the App Store version can use, so Mini detects this and hides the iCloud setting.
+the official DMG and App Store versions can use, so Mini detects this and hides the iCloud setting.
 
 ## Contributing
 

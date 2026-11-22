@@ -41,6 +41,8 @@ body:
     attributes:
       label: Where did you get it?
       options:
+        - DMG from GitHub releases
+        - Homebrew
         - Mac App Store
         - Built from source
     validations:
