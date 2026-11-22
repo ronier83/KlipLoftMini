@@ -9,7 +9,7 @@
 Press <kbd>⌥</kbd> <kbd>Space</kbd>, pick a clip, and it's pasted.<br>
 Free, private and open source, from the maker of [KlipLoft](https://www.kliploft.app).
 
-[![Download](https://img.shields.io/github/v/release/ronier83/KlipLoftMini?label=Download&color=FF6B35)](https://github.com/ronier83/KlipLoftMini/releases/latest)
+[![Download](https://img.shields.io/github/v/release/ronier83/KlipLoftMini?label=Download&color=FF6B35&cacheSeconds=3600)](https://github.com/ronier83/KlipLoftMini/releases/latest)
 [![Mac App Store: coming soon](https://img.shields.io/badge/Mac_App_Store-coming_soon-0D96F6?logo=apple&logoColor=white)](https://www.kliploft.app)
 [![macOS 26+](https://img.shields.io/badge/macOS-26%2B-black?logo=apple)](#build-from-source)
 [![Swift](https://img.shields.io/badge/Swift-SwiftUI-F05138?logo=swift&logoColor=white)](https://developer.apple.com/xcode/swiftui/)
