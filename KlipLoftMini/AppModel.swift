@@ -106,13 +106,11 @@ final class AppModel {
         }
         if mouseActive, let index, selectedIndex != index, rows.indices.contains(index) { selectedIndex = index }
     }
-    private(set) var accessibilityGranted = PasteService.isTrusted
 
     @ObservationIgnored private var monitor: ClipboardMonitor!
     @ObservationIgnored private(set) var screenshots: ScreenshotWatcher!
     @ObservationIgnored private(set) var panel: SpotlightPanelController!
     @ObservationIgnored private var pruneTimer: Timer?
-    @ObservationIgnored private var permissionTimer: Timer?
     @ObservationIgnored private var publishedSourceApps: Set<String> = []
     @ObservationIgnored private var preferences: PreferencesWindowController?
 
@@ -157,9 +155,6 @@ final class AppModel {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { AppModel.shared.warmUpSearch() }
         pruneTimer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { _ in
             MainActor.assumeIsolated { AppModel.shared.pruneHistory() }
-        }
-        permissionTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            MainActor.assumeIsolated { AppModel.shared.refreshPermissionStatus() }
         }
         refresh()
     }
@@ -387,17 +382,6 @@ final class AppModel {
         sync.pushCapacity(capacity)
         pruneHistory()
         return true
-    }
-
-    /// Direct paste on or off; turning it on asks for Accessibility.
-    func setDirectPaste(_ enabled: Bool) {
-        UserDefaults.standard.set(enabled, forKey: Prefs.directPaste)
-        if enabled, !PasteService.isTrusted { PasteService.requestAccess() }
-    }
-
-    func refreshPermissionStatus() {
-        let trusted = PasteService.isTrusted
-        if trusted != accessibilityGranted { accessibilityGranted = trusted }
     }
 
     /// Unpinned clips copied since `cutoff`.
@@ -800,16 +784,8 @@ final class AppModel {
     func paste(_ item: ClipItem, plainText: Bool = false) {
         writeToPasteboard(item, plainText: plainText || UserDefaults.standard.bool(forKey: Prefs.alwaysPlainText))
         panel.hide()
-        guard UserDefaults.standard.bool(forKey: Prefs.directPaste), PasteService.isTrusted else {
-            if UserDefaults.standard.bool(forKey: Prefs.directPaste) { PasteService.requestAccess() }
-            showToast("Copied · press ⌘V to paste", symbol: "doc.on.clipboard")
-            return
-        }
-        playSound("Pop")
-        // The panel never activates the app, so the app underneath is still in front.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            PasteService.sendPasteKeystroke()
-        }
+        // The clip is only copied: the user presses ⌘V themselves, so no Accessibility access is needed.
+        showToast("Copied · press ⌘V to paste", symbol: "doc.on.clipboard")
     }
 
     func copy(_ item: ClipItem) {

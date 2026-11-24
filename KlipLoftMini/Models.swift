@@ -418,8 +418,6 @@ enum Prefs {
     static let hotKeyModifiers = "hotKeyModifiers"
     static let hotKeyDisplay = "hotKeyDisplay"
     static let linkPreviews = "linkPreviews"
-    /// Picking a clip also presses ⌘V in the app underneath (needs Accessibility). Off by default.
-    static let directPaste = "directPaste"
     static let captureScreenshots = "captureScreenshots"
     /// A security-scoped bookmark to the folder screenshots are saved in (the sandbox needs the
     /// user to pick it once).
@@ -486,7 +484,6 @@ enum Prefs {
             hotKeyModifiers: 2048, // optionKey
             hotKeyDisplay: "⌥Space",
             linkPreviews: true,
-            directPaste: false,
             iCloudSync: true,
             syncedImageLimitMB: CloudSync.defaultSyncedImageLimitMB,
             ignoredApps: defaultIgnoredApps,

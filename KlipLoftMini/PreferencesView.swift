@@ -134,7 +134,6 @@ private struct SettingsIcon: View {
 struct GeneralPreferencesView: View {
     @Environment(AppModel.self) private var model
     @AppStorage(Prefs.alwaysPlainText) private var alwaysPlainText = false
-    @AppStorage(Prefs.directPaste) private var directPaste = false
     @AppStorage(Prefs.soundEffects) private var soundEffects = false
     /// The slider's position. The saved capacity only changes once the slider settles and any
     /// deletion it causes is confirmed.
@@ -234,7 +233,6 @@ struct GeneralPreferencesView: View {
                     .foregroundStyle(.secondary)
             }
             Section("Pasting") {
-                accessibilityStatus
                 Toggle("Always Paste as Plain Text", isOn: $alwaysPlainText)
             }
             Section("Other") {
@@ -263,7 +261,6 @@ struct GeneralPreferencesView: View {
         }
         // Another Mac changed the capacity through iCloud.
         .onChange(of: savedCapacity) { _, value in draftCapacity = value }
-        .onAppear { model.refreshPermissionStatus() }
     }
 
     @ViewBuilder private var syncStatus: some View {
@@ -308,33 +305,6 @@ struct GeneralPreferencesView: View {
             }
         }
         .font(.system(size: 11))
-    }
-
-    /// The Direct Paste toggle; turning it on asks for Accessibility. While on, a Status row shows
-    /// whether access is allowed, with a button while it's still missing.
-    @ViewBuilder private var accessibilityStatus: some View {
-        Toggle(isOn: Binding(get: { directPaste }, set: { model.setDirectPaste($0) })) {
-            Text("Direct Paste")
-            Text("Picking a clip pastes it into the app you're in. When off, the clip is copied and you press ⌘V.")
-        }
-        if directPaste {
-            LabeledContent("Status") {
-                Label(model.accessibilityGranted ? "Active" : "Waiting for Accessibility access",
-                      systemImage: model.accessibilityGranted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundStyle(model.accessibilityGranted ? .green : .orange)
-            }
-            if !model.accessibilityGranted {
-                LabeledContent {
-                    Button("Open Accessibility Settings…") {
-                        PasteService.requestAccess()
-                        PasteService.openAccessibilitySettings()
-                    }
-                } label: {
-                    Text("Accessibility Needed")
-                    Text("Allow KlipLoft Mini in Privacy & Security → Accessibility so it can press ⌘V for you.")
-                }
-            }
-        }
     }
 }
 

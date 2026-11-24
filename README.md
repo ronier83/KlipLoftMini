@@ -148,8 +148,8 @@ Store version (the developer can't read it). There are no analytics, crash repor
 The one other connection is link previews: when you copy a link, Mini fetches that page's title and picture
 directly from the site. You can turn this off in Settings › Clips.
 
-Direct Paste, which presses <kbd>⌘</kbd> <kbd>V</kbd> for you, is off by default. It's the only feature that
-asks for Accessibility access.
+Picking a clip copies it; you press <kbd>⌘</kbd> <kbd>V</kbd> to paste. Mini never asks for Accessibility
+access.
 
 ## Build from source
 
