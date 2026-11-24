@@ -16,6 +16,8 @@ Free, private and open source, from the maker of [KlipLoft](https://www.kliploft
   </picture>
 </a>
 
+**[🌐 Website](https://www.kliploft.app/mini) · [▶️ Watch the demo](https://youtu.be/Wa0ybQQhZHU) · [📺 All videos](https://www.youtube.com/@Klip-App)**
+
 [![Mac App Store](https://img.shields.io/badge/Mac_App_Store-available-0D96F6?logo=apple&logoColor=white)](https://apps.apple.com/app/kliploft-mini/id6837203965?mt=12)
 [![Download](https://img.shields.io/github/v/release/ronier83/KlipLoftMini?label=Download&color=FF6B35&cacheSeconds=3600)](https://github.com/ronier83/KlipLoftMini/releases/latest)
 [![macOS 26+](https://img.shields.io/badge/macOS-26%2B-black?logo=apple)](#build-from-source)
@@ -29,6 +31,16 @@ Free, private and open source, from the maker of [KlipLoft](https://www.kliploft
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/recent-dark.png">
   <img src="docs/assets/recent-light.png" width="460" alt="KlipLoft Mini showing the latest clips under the search bar">
 </picture>
+
+</div>
+
+## See it in action
+
+<div align="center">
+
+<a href="https://youtu.be/Wa0ybQQhZHU"><img src="https://img.youtube.com/vi/Wa0ybQQhZHU/maxresdefault.jpg" width="560" alt="Watch the KlipLoft Mini demo on YouTube"></a>
+
+<sub>▶️ [Watch the demo on YouTube](https://youtu.be/Wa0ybQQhZHU) · more videos on the [KlipLoft channel](https://www.youtube.com/@Klip-App) · [kliploft.app/mini](https://www.kliploft.app/mini)</sub>
 
 </div>
 
