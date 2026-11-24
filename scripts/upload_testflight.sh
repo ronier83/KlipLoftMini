@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Uploads a build of KlipLoft Mini to App Store Connect (TestFlight, then the App Store): archives the
 # app and exports it for the App Store, which uploads it with the Apple account signed in to Xcode.
-# The same code and build number as the DMG from scripts/release_dmg.sh.
+# The App Store is the only official build of Mini: there's no DMG.
 #
 # Needs Config/Local.xcconfig with your team.
 #

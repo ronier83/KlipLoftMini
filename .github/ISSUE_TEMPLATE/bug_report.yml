@@ -41,10 +41,9 @@ body:
     attributes:
       label: Where did you get it?
       options:
-        - DMG from GitHub releases
-        - Homebrew
         - Mac App Store
         - Built from source
+        - An older DMG or Homebrew install
     validations:
       required: true
   - type: textarea
