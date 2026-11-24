@@ -9,8 +9,15 @@
 Press <kbd>⌥</kbd> <kbd>Space</kbd>, pick a clip, and it's pasted.<br>
 Free, private and open source, from the maker of [KlipLoft](https://www.kliploft.app).
 
+<a href="https://apps.apple.com/app/kliploft-mini/id6837203965?mt=12">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/mac-app-store-white.svg">
+    <img src="docs/assets/mac-app-store-black.svg" height="56" alt="Download on the Mac App Store">
+  </picture>
+</a>
+
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-available-0D96F6?logo=apple&logoColor=white)](https://apps.apple.com/app/kliploft-mini/id6837203965?mt=12)
 [![Download](https://img.shields.io/github/v/release/ronier83/KlipLoftMini?label=Download&color=FF6B35&cacheSeconds=3600)](https://github.com/ronier83/KlipLoftMini/releases/latest)
-[![Mac App Store: coming soon](https://img.shields.io/badge/Mac_App_Store-coming_soon-0D96F6?logo=apple&logoColor=white)](https://www.kliploft.app)
 [![macOS 26+](https://img.shields.io/badge/macOS-26%2B-black?logo=apple)](#build-from-source)
 [![Swift](https://img.shields.io/badge/Swift-SwiftUI-F05138?logo=swift&logoColor=white)](https://developer.apple.com/xcode/swiftui/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
@@ -29,6 +36,8 @@ Free, private and open source, from the maker of [KlipLoft](https://www.kliploft
 
 KlipLoft Mini is free. Pick whichever way you like:
 
+- **Mac App Store:** [get KlipLoft Mini on the Mac App Store](https://apps.apple.com/app/kliploft-mini/id6837203965?mt=12).
+  It installs in one click and updates itself.
 - **DMG:** download `KlipLoft-Mini-<version>.dmg` from the [latest release](https://github.com/ronier83/KlipLoftMini/releases/latest),
   open it and drag KlipLoft Mini to Applications. It's signed and notarized by Apple.
 - **Homebrew:**
@@ -37,7 +46,6 @@ KlipLoft Mini is free. Pick whichever way you like:
   brew install --cask ronier83/tap/kliploft-mini
   ```
 
-- **Mac App Store:** coming soon.
 - **Source:** [build it yourself](#build-from-source) in a couple of minutes.
 
 The App Store updates its copy for you. For the DMG, download the newest release when one comes out
