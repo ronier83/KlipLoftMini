@@ -730,14 +730,14 @@ struct AboutPreferencesView: View {
         .formStyle(.grouped)
     }
 
-    /// The App Store updates its copies; a DMG or a build from source is updated by downloading the newest release.
+    /// The App Store updates its copies; a build from source is updated by pulling the latest source and building again.
     private var updates: some View {
         LabeledContent("Updates") {
             if Self.isFromAppStore {
                 Text("Through the Mac App Store")
                     .foregroundStyle(.secondary)
             } else {
-                Link("Releases on GitHub", destination: Self.releases)
+                Link("Latest source on GitHub", destination: Self.sourceCode)
             }
         }
     }
@@ -746,7 +746,6 @@ struct AboutPreferencesView: View {
     private static let isFromAppStore = FileManager.default.fileExists(
         atPath: Bundle.main.bundleURL.appending(path: "Contents/_MASReceipt/receipt").path)
     private static let sourceCode = URL(string: "https://github.com/ronier83/KlipLoftMini")!
-    private static let releases = URL(string: "https://github.com/ronier83/KlipLoftMini/releases")!
 }
 
 /// Mini's way into the full KlipLoft, its free bigger sibling: what it adds, and that the
