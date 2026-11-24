@@ -63,6 +63,14 @@ enum SearchFilter: Hashable {
         case .app(_, let name): name
         }
     }
+
+    /// A type chip rather than an app chip.
+    var isKind: Bool {
+        switch self {
+        case .kind: true
+        case .app: false
+        }
+    }
 }
 
 extension ClipItem {
@@ -417,6 +425,9 @@ enum Prefs {
     /// user to pick it once).
     static let screenshotFolderBookmark = "screenshotFolderBookmark"
     static let iCloudSync = "iCloudSync"
+    /// Images larger than this many MB stay on the Mac that copied them instead of syncing; one of
+    /// `CloudSync.syncedImageLimitOptions` (Settings → General → iCloud).
+    static let syncedImageLimitMB = "syncedImageLimitMB"
     /// Set once this Mac has finished its first download from iCloud; history isn't pruned before
     /// then, so a new Mac can't delete clips it hasn't seen yet.
     static let iCloudImportedOnce = "iCloudImportedOnce"
@@ -477,6 +488,7 @@ enum Prefs {
             linkPreviews: true,
             directPaste: false,
             iCloudSync: true,
+            syncedImageLimitMB: CloudSync.defaultSyncedImageLimitMB,
             ignoredApps: defaultIgnoredApps,
             skipSecrets: false,
             saveAutomaticCopies: false,

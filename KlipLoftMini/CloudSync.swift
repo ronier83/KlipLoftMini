@@ -12,8 +12,19 @@ import SwiftData
 @Observable
 final class CloudSync {
     static let containerID = "iCloud.com.ronerez.Klip"
-    /// Larger images stay on the Mac that copied them (see `LocalImage`).
-    static let maxSyncedImageBytes = 10 * 1024 * 1024
+    /// The sizes Settings offers for the image limit, in MB, and the one a new install uses.
+    static let syncedImageLimitOptions = [1, 3, 5, 7, 10]
+    static let defaultSyncedImageLimitMB = 7
+
+    /// The chosen limit in MB; a value from an old or hand-edited setting falls back to the default.
+    static var syncedImageLimitMB: Int {
+        let chosen = UserDefaults.standard.integer(forKey: Prefs.syncedImageLimitMB)
+        return syncedImageLimitOptions.contains(chosen) ? chosen : defaultSyncedImageLimitMB
+    }
+
+    /// Larger images stay on the Mac that copied them (see `LocalImage`). Applies when a clip is
+    /// saved, so changing it leaves clips already copied where they are.
+    static var maxSyncedImageBytes: Int { syncedImageLimitMB * 1024 * 1024 }
 
     /// Whether this build is signed for KlipLoft's iCloud container. Only the official builds are;
     /// a build from source is signed with its own team, which can't use it, so it keeps its history

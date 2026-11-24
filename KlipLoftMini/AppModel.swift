@@ -37,6 +37,8 @@ final class AppModel {
             guard query != oldValue else { return }
             markedFilter = nil
             selectedIndex = 0
+            // The suggestions' app list is read again for the next search.
+            if query.isEmpty { suggestionApps = nil }
             searchTask?.cancel()
             // Clearing the search (Esc, reopening) shows the history at once.
             guard !query.isEmpty else { return refresh() }
@@ -55,6 +57,11 @@ final class AppModel {
     }
     /// The chip the first ⌫ on an empty search marked; the next ⌫ removes it.
     var markedFilter: SearchFilter?
+    /// The apps clips came from, most clips first, for `searchSuggestion`: read once a search
+    /// types two letters, dropped when the search is cleared.
+    @ObservationIgnored private var suggestionApps: [(bundleID: String, name: String)]?
+    /// The suggestion last taken and the letters it replaced, for `undoAcceptedSuggestion`.
+    @ObservationIgnored private var acceptedSuggestion: (filter: SearchFilter, typed: String)?
     /// The apps clips came from, most frequent first, for the filter menu; refreshed on each open.
     private(set) var filterApps: [(bundleID: String, name: String)] = []
     private(set) var rows: [Row] = []
@@ -650,12 +657,59 @@ final class AppModel {
     /// stops at the mark. Returns false when there's no chip, so ⌫ can do its other jobs.
     func deleteBackwardOverChips(isRepeat: Bool) -> Bool {
         guard query.isEmpty, let last = searchFilters.last else { return false }
+        // A suggestion just taken goes back to the letters typed for it.
+        if !isRepeat, undoAcceptedSuggestion() { return true }
         if markedFilter == last {
             if !isRepeat { searchFilters.removeLast() }
         } else {
             markedFilter = last
         }
         return true
+    }
+
+    /// The chip the search offers for what's typed: a type once three letters start its name
+    /// ("ima" → Image), otherwise an app with clips once two letters start its name or a word of
+    /// it ("ch" → Google Chrome; the app with the most clips wins). One type and one app at most:
+    /// nothing is offered for a kind that already has a chip, or in the pinboards list.
+    var searchSuggestion: SearchFilter? {
+        let text = query.trimmingCharacters(in: .whitespaces)
+        guard text.count >= 2, mode != .pinboards else { return nil }
+        if text.count >= 3, !searchFilters.contains(where: \.isKind),
+           let kind = ClipKind.allCases.first(where: { Self.name($0.title, startsWith: text) }) {
+            return .kind(kind)
+        }
+        guard !searchFilters.contains(where: { !$0.isKind }) else { return nil }
+        if suggestionApps == nil { suggestionApps = sourceApps(limit: .max) }
+        return suggestionApps?
+            .first { Self.name($0.name, startsWith: text) }
+            .map { .app(bundleID: $0.bundleID, name: $0.name) }
+    }
+
+    /// Tab or a click on the suggestion: it becomes a chip in place of the letters typed for it.
+    func acceptSearchSuggestion() {
+        guard let filter = searchSuggestion else { return }
+        acceptedSuggestion = (filter, query)
+        query = ""
+        searchFilters.append(filter)
+        focusToken += 1
+    }
+
+    /// ⌫ with no text left, while the last chip is the suggestion just taken: the chip goes back to
+    /// the letters typed for it, so a filter taken by mistake costs one key. False if it isn't.
+    private func undoAcceptedSuggestion() -> Bool {
+        defer { acceptedSuggestion = nil }
+        guard let accepted = acceptedSuggestion, query.isEmpty, searchFilters.last == accepted.filter else { return false }
+        searchFilters.removeLast()
+        query = accepted.typed
+        focusToken += 1
+        return true
+    }
+
+    /// Whether the name, or one of its words, starts with `prefix`, ignoring case and accents.
+    private static func name(_ name: String, startsWith prefix: String) -> Bool {
+        let options: String.CompareOptions = [.anchored, .caseInsensitive, .diacriticInsensitive]
+        return name.range(of: prefix, options: options) != nil
+            || name.split(separator: " ").contains { $0.range(of: prefix, options: options) != nil }
     }
 
     /// The apps clips came from, most frequent first.

@@ -129,7 +129,16 @@ struct SpotlightView: View {
                     return .handled
                 }
                 .onKeyPress(.escape) { model.escape(); return .handled }
-                .onKeyPress(.tab) { model.togglePinboards(); return .handled }
+                // Tab completes the suggested filter, like autocomplete in Terminal; otherwise
+                // it switches to the pinboards. Return still opens the selected clip.
+                .onKeyPress(.tab) {
+                    if model.searchSuggestion != nil {
+                        model.acceptSearchSuggestion()
+                    } else {
+                        model.togglePinboards()
+                    }
+                    return .handled
+                }
                 .onKeyPress(.rightArrow) { handleRight() }
                 .onKeyPress(.leftArrow) { handleLeft() }
                 .onKeyPress(phases: [.down, .repeat]) { press in
@@ -138,6 +147,10 @@ struct SpotlightView: View {
                     model.markedFilter = nil
                     return press.phase == .down ? handleCommandDigit(press) : .ignored
                 }
+
+            if let suggestion = model.searchSuggestion {
+                SuggestionChip(filter: suggestion) { model.acceptSearchSuggestion() }
+            }
 
             filterMenu
         }
@@ -470,6 +483,47 @@ struct FilterChip: View {
         .buttonStyle(.plain)
         .fixedSize()
         .help("Remove filter")
+    }
+}
+
+/// The filter offered for what's typed (`AppModel.searchSuggestion`): a dimmed, dashed chip with
+/// ⇥ at its end; Tab or a click turns it into a real chip.
+struct SuggestionChip: View {
+    let filter: SearchFilter
+    let accept: () -> Void
+
+    var body: some View {
+        Button(action: accept) {
+            HStack(spacing: 5) {
+                switch filter {
+                case .kind(let kind):
+                    Image(systemName: kind.symbol)
+                        .font(.system(size: 12.5))
+                        .foregroundStyle(.secondary)
+                case .app(let bundleID, _):
+                    Image(nsImage: AppIcons.icon(for: bundleID))
+                        .resizable()
+                        .interpolation(.high)
+                        .frame(width: 18, height: 18)
+                }
+                Text(filter.title)
+                    .lineLimit(1)
+                    .foregroundStyle(.primary)
+                Image(systemName: "arrow.right.to.line")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .font(.system(size: 14))
+            .padding(.leading, 8)
+            .padding(.trailing, 9)
+            .frame(height: 28)
+            .overlay(Capsule().strokeBorder(Color.secondary.opacity(0.6), style: StrokeStyle(lineWidth: 1, dash: [3, 2])))
+            .opacity(0.8)
+            .contentShape(.capsule)
+        }
+        .buttonStyle(.plain)
+        .fixedSize()
+        .help(filter.isKind ? "Press Tab to filter by this type" : "Press Tab to filter by this app")
     }
 }
 

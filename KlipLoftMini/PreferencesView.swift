@@ -142,6 +142,37 @@ struct GeneralPreferencesView: View {
     @State private var capacityCheck: Task<Void, Never>?
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @AppStorage(Prefs.historyCapacity) private var savedCapacity = HistoryCapacity.month.rawValue
+    @AppStorage(Prefs.syncedImageLimitMB) private var syncedImageLimitMB = CloudSync.defaultSyncedImageLimitMB
+
+    /// The largest image that syncs: a slider stepping through 1, 3, 5, 7 and 10 MB, with what
+    /// the choice costs in iCloud storage underneath.
+    private var syncedImageLimit: some View {
+        let options = CloudSync.syncedImageLimitOptions
+        return LabeledContent {
+            VStack(spacing: 4) {
+                Slider(
+                    value: Binding(
+                        get: { Double(options.firstIndex(of: syncedImageLimitMB) ?? options.firstIndex(of: CloudSync.defaultSyncedImageLimitMB) ?? 0) },
+                        set: { syncedImageLimitMB = options[Int($0.rounded())] }
+                    ),
+                    in: 0...Double(options.count - 1),
+                    step: 1
+                )
+                HStack {
+                    ForEach(options, id: \.self) { option in
+                        Text("\(option) MB")
+                            .font(.system(size: 11))
+                            .foregroundStyle(option == syncedImageLimitMB ? .primary : .secondary)
+                        if option != options.last { Spacer() }
+                    }
+                }
+            }
+            .frame(width: 260)
+        } label: {
+            Text("Largest Image to Sync")
+            Text("Synced clips are stored in your iCloud and count toward your iCloud storage, alongside your photos and backups. Images up to \(syncedImageLimitMB) MB sync to your other devices; larger ones stay on the Mac that copied them and use no iCloud storage. A lower limit saves iCloud space, and only images copied from now on follow it.")
+        }
+    }
 
     var body: some View {
         Form {
@@ -156,9 +187,12 @@ struct GeneralPreferencesView: View {
                         set: { CloudSync.setEnabled($0) }
                     )) {
                         Text("Sync History and Pinboards")
-                        Text("Shares one history and its capacity with KlipLoft and your other devices. Images over 10 MB stay on the Mac that copied them.")
+                        Text("Shares one history and its capacity with KlipLoft and your other devices. Images over \(syncedImageLimitMB) MB stay on the Mac that copied them.")
                     }
                     syncStatus
+                    if CloudSync.isEnabled {
+                        syncedImageLimit
+                    }
                 }
             }
             Section {
