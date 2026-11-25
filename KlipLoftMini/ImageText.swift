@@ -37,6 +37,9 @@ final class ImageTextIndex {
     @ObservationIgnored private let storeURL: URL
     /// Every image already read, with or without text.
     @ObservationIgnored private var read: Set<UUID> = []
+    /// Images Vision failed on this launch (as it does in a virtual machine, or under memory
+    /// pressure). Nothing is saved for them, so the next launch tries again.
+    @ObservationIgnored private var failed: Set<UUID> = []
     /// Images waiting to be read, next first, with their bytes when already at hand. Urgent ones
     /// (just copied, or opened in the preview) are read even while the backfill is paused.
     @ObservationIgnored private var queue: [(id: UUID, data: Data?, urgent: Bool)] = []
@@ -106,7 +109,8 @@ final class ImageTextIndex {
     var status: String {
         guard container != nil else { return "store couldn't be opened" }
         let waiting = "\(queue.count + (reading == nil ? 0 : 1)) waiting"
-        return "\(read.count) read, \(texts.count) with text, \(waiting)" + (backfillPaused ? " (paused: Low Power Mode or heat)" : "")
+        let failures = failed.isEmpty ? "" : ", \(failed.count) failed"
+        return "\(read.count) read, \(texts.count) with text, \(waiting)\(failures)" + (backfillPaused ? " (paused: Low Power Mode or heat)" : "")
     }
 
     func text(for id: UUID) -> String? {
@@ -120,7 +124,7 @@ final class ImageTextIndex {
 
     /// Queues an image. `first` reads it next, ahead of the backfill, even while that's paused.
     func enqueue(_ id: UUID, data: Data?, first: Bool = false) {
-        guard container != nil, !read.contains(id) else { return }
+        guard container != nil, !read.contains(id), !failed.contains(id) else { return }
         if queued.contains(id) {
             guard first, let index = queue.firstIndex(where: { $0.id == id }) else { return }
             let entry = queue.remove(at: index)
@@ -215,17 +219,20 @@ final class ImageTextIndex {
         UserDefaults.standard.set("\(next.id.uuidString) \(attempts + 1)", forKey: Self.readingKey)
         // The backfill yields to everything else; a new copy is read sooner.
         Task(priority: next.urgent ? .userInitiated : .utility) {
-            let text = (try? await Self.recognize(data)) ?? ""
+            let text = try? await Self.recognize(data)
             finish(next.id, text: text)
         }
     }
 
-    private func finish(_ id: UUID, text: String) {
+    /// `text` is nil when Vision failed: the image isn't marked read, so it isn't taken for one
+    /// without text.
+    private func finish(_ id: UUID, text: String?) {
         UserDefaults.standard.removeObject(forKey: Self.readingKey)
         let deleted = readingDeleted
         reading = nil
         readingDeleted = false
-        if let context, !deleted, !read.contains(id) {
+        if text == nil, !deleted { failed.insert(id) }
+        if let context, let text, !deleted, !read.contains(id) {
             read.insert(id)
             context.insert(ImageText(clipID: id, text: text))
             unsaved += 1
