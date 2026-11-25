@@ -491,15 +491,17 @@ struct ShortcutRecorder: View {
         isRecording = true
         HotKey.shared.unregister()
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            // Every key is swallowed while recording; the closure returns nothing so the
+            // non-Sendable NSEvent never crosses out of the main actor.
             MainActor.assumeIsolated {
                 if event.keyCode == 53 { // Escape
                     stop()
-                    return nil
+                    return
                 }
                 let flags = event.modifierFlags.intersection([.command, .option, .control, .shift])
                 guard !flags.intersection([.command, .option, .control]).isEmpty else {
                     NSSound.beep()
-                    return nil
+                    return
                 }
                 let saved = HotKey.shared.save(
                     keyCode: UInt32(event.keyCode),
@@ -507,8 +509,8 @@ struct ShortcutRecorder: View {
                     display: HotKey.displayString(for: event)
                 )
                 if saved { stop() } else { NSSound.beep() }
-                return nil
             }
+            return nil
         }
     }
 
