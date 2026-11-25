@@ -33,6 +33,12 @@ enum SecureDelete {
               textColumns: [], binaryColumns: ["ZDATA"], supportFolder: ".KlipLocal_SUPPORT")
     }
 
+    /// Blanks the text read from the given clips' images (see `ImageText`). Call it right before deleting them.
+    static func scrubImageTexts(_ clipIDs: [UUID], store: URL) {
+        scrub(clipIDs, store: store, table: "ZIMAGETEXT", idColumn: "ZCLIPID",
+              textColumns: ["ZTEXT"], binaryColumns: [], supportFolder: ".KlipText_SUPPORT")
+    }
+
     /// Moves the write-ahead log into the database and empties it, so old versions of
     /// overwritten pages don't stay in the log. Call it after saving the deletion.
     static func checkpoint(store: URL) {

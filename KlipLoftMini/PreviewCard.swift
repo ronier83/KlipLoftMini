@@ -150,13 +150,20 @@ struct PreviewBody: View {
                     .onDisappear { saveTextNow() }
             }
         case .image:
-            if let image = Thumbnails.image(for: item, maxPixelSize: 1200) {
-                Image(nsImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .clipShape(.rect(cornerRadius: 12))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            VStack(alignment: .leading, spacing: 10) {
+                if let image = Thumbnails.image(for: item, maxPixelSize: 1200) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(.rect(cornerRadius: 12))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                if let text = model.imageText.text(for: item.id) {
+                    foundText(text)
+                }
             }
+            // An image whose text hasn't been read yet (the backfill hasn't reached it) is read next.
+            .task(id: item.id) { model.imageText.enqueue(item.id, data: nil, first: true) }
         case .color:
             RoundedRectangle(cornerRadius: 18)
                 .fill(Color(hex: item.text ?? "") ?? .gray)
@@ -178,6 +185,25 @@ struct PreviewBody: View {
         }
     }
 
+    /// Text Found: the text Vision read in the image, selectable; long text scrolls in its box.
+    private func foundText(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Text Found")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+            ScrollView {
+                Text(text)
+                    .font(.system(size: 12.5))
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxHeight: 110)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(.primary.opacity(0.05)))
+        }
+    }
+
     private var actions: some View {
         HStack(spacing: 8) {
             Button("Paste") { model.paste(item) }
@@ -186,6 +212,10 @@ struct PreviewBody: View {
                 Button("Open in Browser") { model.openInBrowser(item) }
             }
             Button("Copy") { model.copy(item) }
+            // Images only, once Vision has found text in them
+            if item.kind == .image, model.imageText.text(for: item.id) != nil {
+                Button("Copy Text") { model.copyText(of: item) }
+            }
             pinMenu
             // Text and links can be edited in place; the same as clicking into the text
             if item.kind == .text || item.kind == .link {

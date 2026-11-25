@@ -96,6 +96,7 @@ extension ClipItem {
             || filePaths.contains { ($0 as NSString).lastPathComponent.localizedStandardContains(query) }
             || (sourceAppName?.localizedStandardContains(query) ?? false)
             || kind.title.localizedStandardContains(query)
+            || (kind == .image && AppModel.shared.imageText.text(for: id)?.localizedStandardContains(query) == true)
     }
 }
 

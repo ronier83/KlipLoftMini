@@ -28,6 +28,8 @@ final class AppModel {
     static let shared = AppModel()
 
     let container: ModelContainer
+    /// Text found in image clips, in its own store on this Mac (see `ImageTextIndex`).
+    let imageText = ImageTextIndex(directory: AppModel.storeDirectory)
     let sync = CloudSync()
 
     var mode: Mode = .recent { didSet { if mode != oldValue { selectedIndex = 0; refresh() } } }
@@ -133,6 +135,11 @@ final class AppModel {
         HotKey.shared.onPress = { [weak self] in self?.panel.toggle() }
         HotKey.shared.registerSaved()
         let launch = Date.now
+        imageText.imageData = { [weak self] id in self?.item(withID: id)?.imagePayload }
+        // An open search takes in images whose text was just found.
+        imageText.onFound = { [weak self] _ in
+            if self?.query.isEmpty == false { self?.refresh() }
+        }
         sync.onImport = { [weak self] in
             self?.mergeDuplicates()
             self?.pruneHistory()
@@ -140,12 +147,15 @@ final class AppModel {
             self?.rebuildTagIndex()
             self?.historyChanged()
             self?.addWelcomeClipsIfFreshInstall(since: launch)
+            // Images from other devices get their text read here too.
+            if let self { self.imageText.scanHistory(in: self.context) }
         }
         sync.onCapacityChange = { [weak self] in self?.pruneHistory() }
         sync.onAccountUnavailable = { [weak self] in self?.addWelcomeClipsIfFreshInstall(since: launch) }
         sync.start(storeWasEmpty: ((try? context.fetchCount(FetchDescriptor<ClipItem>())) ?? 0) == 0)
         mergeDuplicates()
         removeOrphanedLocalImages()
+        removeOrphanedImageTexts()
         useStoredAppIcons()
         // With iCloud on, the welcome clips wait for the first download (onImport above).
         if CloudSync.canPrune { addWelcomeClipsIfFreshInstall(since: launch) }
@@ -153,6 +163,10 @@ final class AppModel {
         // Off the launch path, so the first search doesn't pay for them: the keyword index, and one
         // throwaway text search that brings the clip store into the disk cache.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { AppModel.shared.warmUpSearch() }
+        // Then the text in images not read yet, newest first, one at a time in the background.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            AppModel.shared.imageText.scanHistory(in: AppModel.shared.context)
+        }
         pruneTimer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { _ in
             MainActor.assumeIsolated { AppModel.shared.pruneHistory() }
         }
@@ -227,6 +241,7 @@ final class AppModel {
         context.insert(item)
         addToTagIndex(item)
         publishSourceApp(draft.sourceBundleID, name: draft.sourceAppName)
+        if draft.kind == .image { imageText.enqueue(item.id, data: draft.imageData, first: true) }
         return item
     }
 
@@ -297,6 +312,14 @@ final class AppModel {
         if merged > 0 { try? context.save() }
     }
 
+    /// Image text whose clip was deleted, here, on another device, or by an older KlipLoft Mini.
+    private func removeOrphanedImageTexts() {
+        var descriptor = FetchDescriptor<ClipItem>()
+        descriptor.propertiesToFetch = [\.id]
+        guard let items = try? context.fetch(descriptor) else { return }
+        imageText.removeOrphans(keeping: Set(items.map(\.id)))
+    }
+
     private func removeOrphanedLocalImages() {
         guard let images = try? context.fetch(FetchDescriptor<LocalImage>()), !images.isEmpty else { return }
         let ids = Set(((try? context.fetch(FetchDescriptor<ClipItem>(predicate: #Predicate { $0.imageIsLocalOnly }))) ?? []).map(\.id))
@@ -313,6 +336,8 @@ final class AppModel {
     private func deleteScrubbed(_ items: [ClipItem]) {
         try? context.save()
         let store = Self.storeDirectory.appending(path: "Klip.store")
+        // Read before deleting: a deleted clip's properties can't be read after the save.
+        let imageIDs = items.filter { $0.kind == .image }.map(\.id)
         SecureDelete.scrubClips(items.map(\.id), store: store)
         for item in items {
             if previewItemID == item.id { previewItemID = nil }
@@ -321,6 +346,7 @@ final class AppModel {
         try? context.save()
         SecureDelete.checkpoint(store: store)
         removeOrphanedLocalImages()
+        imageText.remove(imageIDs)
         historyChanged()
     }
 
@@ -562,7 +588,8 @@ final class AppModel {
 
     /// The history, newest first, up to the loaded pages: everything, or what matches the search
     /// and filters. The database does the matching on titles, text and app names (only the rows
-    /// that match are read); keywords and file names come from `tagIndex`.
+    /// that match are read); keywords and file names come from `tagIndex`, and text in images from
+    /// `imageText`.
     private func searchHistory(_ text: String) -> [ClipItem] {
         var kinds: [String] = []
         var apps: [String] = []
@@ -601,16 +628,22 @@ final class AppModel {
         defer { matchCount = total }
         guard !text.isEmpty else { return items }
 
-        // Keyword and file-name matches the database couldn't see.
+        // Keyword, file-name and image-text matches the database couldn't see.
         let found = Set(items.map(\.id))
-        let extra = tags().filter { entry in
+        var extra = Set(tags().filter { entry in
             !found.contains(entry.id)
                 && (anyKind || kinds.contains(entry.kindRaw)) && (anyApp || apps.contains(entry.bundleID ?? ""))
                 && entry.words.contains { $0.localizedStandardContains(text) }
-        }.map(\.id)
+        }.map(\.id))
+        if anyKind || kinds.contains(ClipKind.image.rawValue) {
+            extra.formUnion(imageText.matches(text).filter { !found.contains($0) })
+        }
         guard !extra.isEmpty else { return items }
-        total = (total ?? 0) + extra.count
-        let extraItems = (try? context.fetch(FetchDescriptor<ClipItem>(predicate: #Predicate { extra.contains($0.id) }))) ?? []
+        let extraIDs = Array(extra)
+        // The image-text matches haven't been checked against the app chips yet.
+        let extraItems = ((try? context.fetch(FetchDescriptor<ClipItem>(predicate: #Predicate { extraIDs.contains($0.id) }))) ?? [])
+            .filter { anyApp || apps.contains($0.sourceBundleID ?? "") }
+        total = (total ?? 0) + extraItems.count
         return Array((items + extraItems).sorted { $0.createdAt > $1.createdAt }.prefix(loadedLimit))
     }
 
@@ -792,6 +825,18 @@ final class AppModel {
         writeToPasteboard(item, plainText: false)
         panel.hide()
         showToast("Copied", symbol: "doc.on.clipboard")
+    }
+
+    /// Copies the text found in an image clip (Copy Text in the preview). The text isn't saved as a
+    /// clip of its own; it stays with the image.
+    func copyText(of item: ClipItem) {
+        guard let text = imageText.text(for: item.id) else { return }
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(text, forType: .string)
+        monitor.skipCurrentChange()
+        panel.hide()
+        showToast("Text copied", symbol: "text.viewfinder")
     }
 
     /// Opens a link clip in the default browser; a bare "example.com" is opened as https.
